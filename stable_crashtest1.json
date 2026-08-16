@@ -5,6 +5,6 @@
     "version": "1.0.0-ota-crashtest1",
     "size": 1391344,
     "sha256": "bd0f7a102a3327ce453cc4505c613c06709f0b1d44e4ed3280ac141b3e7534e3",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController.ino.bin"
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController_crashtest1.bin"
   }
 }
