@@ -17,9 +17,10 @@
     "path": "/index.html"
   },
 
- "hmi": {
-  "version": "1.0.1-hmipush-test1",
-  "size": 775712,
-  "sha256": "20b874036d8bd4649dd7bb794a7ea0289af67794955b7571d688360558ce5d5e",
-  "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI.ino.bin"
+  "hmi": {
+    "version": "1.0.1-hmipush-test1",
+    "size": 775712,
+    "sha256": "20b874036d8bd4649dd7bb794a7ea0289af67794955b7571d688360558ce5d5e",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI.ino.bin"
+  }
 }
