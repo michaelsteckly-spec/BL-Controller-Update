@@ -15,11 +15,12 @@
     "sha256": "59ffd6b50fbe88f4b079348d9510e125d38234317edba1d8c852402cdbfbeb7b",
     "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index.html",
     "path": "/index.html"
+  },
+
+  "hmi": {
+    "version": "1.0.0-hmipush-dev1",
+    "size": 775648,
+    "sha256": "eecf1e3b7d5400bcf211da8e69e1e1d5310e3abed8f957aff41aa15c9b5c3e6d",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI.ino.bin"
   }
-}
-"hmi": {
-  "version": "1.0.0-hmipush-dev1",
-  "size": 775648,
-  "sha256": "eecf1e3b7d5400bcf211da8e69e1e1d5310e3abed8f957aff41aa15c9b5c3e6d",
-  "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI.ino.bin"
 }
