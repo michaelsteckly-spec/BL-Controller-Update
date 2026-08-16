@@ -1,10 +1,19 @@
 {
   "product": "barnlogic-feed-controller",
   "channel": "stable",
+
   "controller": {
     "version": "1.0.0-hmipush-dev1",
     "size": 1407712,
     "sha256": "7ba3acf513739ed335bf3f627751486a204c8a826c6145e7670a88bf433f284b",
     "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController.ino.bin"
+  },
+
+  "filesystem": {
+    "version": "1.0.0-web-v29",
+    "size": 124123,
+    "sha256": "59ffd6b50fbe88f4b079348d9510e125d38234317edba1d8c852402cdbfbeb7b",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index.html",
+    "path": "/index.html"
   }
 }
