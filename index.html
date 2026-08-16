@@ -126,7 +126,7 @@
 </style>
 </head>
 <body>
-<!-- UI_BUILD:v29 -->
+<!-- UI_BUILD:v30-relay-expansion-toggle -->
 
 <header>
   <div class="wrap topbar">
@@ -1963,13 +1963,21 @@ if(isIdleLike){
     const earlyMixerShutoffRelay = (cfg && (cfg.early_mixer_shutoff_relay ?? cfg.earlyMixerShutoffRelay)) ?? 6;
     const earlyMixerShutoffLbs = (cfg && (cfg.early_mixer_shutoff_lbs ?? cfg.earlyMixerShutoffLbs)) ?? 20;
 
+    const relayExpansionEnabled = (cfg && cfg.relay_expansion_enabled !== undefined) ? !!cfg.relay_expansion_enabled : true;
     const expanderPresent = !!(cfg && cfg.expander_present);
     const expanderAddr = (cfg && cfg.expander_addr) ?? 0x23;
     const expanderSda = (cfg && cfg.expander_sda) ?? 19;
     const expanderScl = (cfg && cfg.expander_scl) ?? 20;
 
     let html = '';
-    html += `<div class="pill" style="margin-bottom:10px">Relay expansion: ${expanderPresent ? 'FOUND' : 'not found'} at 0x${Number(expanderAddr).toString(16)} on SDA ${expanderSda} / SCL ${expanderScl}. Relays 9-24 are MCP23017 outputs.</div>`;
+    html += `<label style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+      <input type="checkbox" id="relayExpansionEnabled" ${relayExpansionEnabled ? 'checked' : ''} style="width:auto"/>
+      <span><b>Use Relay Expansion Board (relays 9-24)</b></span>
+    </label>`;
+    html += `<div class="tiny muted" style="margin-bottom:10px">
+      Default is ON. Turn this OFF when no MCP23017 relay expansion board is installed; the controller will then suppress expansion-board faults and skip relays 9-24.
+      ${relayExpansionEnabled ? (' Current hardware: ' + (expanderPresent ? 'FOUND' : 'not found') + ` at 0x${Number(expanderAddr).toString(16)} on SDA ${expanderSda} / SCL ${expanderScl}.`) : ' Expansion is currently disabled by configuration.'}
+    </div>`;
     html += '<table><thead><tr><th>Relay</th><th>GPIO Pin</th></tr></thead><tbody>';
     for(let i=0;i<8;i++){
       html += `<tr>
@@ -2030,6 +2038,7 @@ if(isIdleLike){
         gpios[i]=v;
       }
       const active_high = !!document.getElementById('relayActiveHigh').checked;
+      const relay_expansion_enabled = !!document.getElementById('relayExpansionEnabled').checked;
       const shutdown_relay = Number(String(document.getElementById('shutdownRelay').value||'').trim());
       const mixer_on_relay = Number(String(document.getElementById('mixerOnRelay').value||'').trim());
       const mixer_off_relay = Number(String(document.getElementById('mixerOffRelay').value||'').trim());
@@ -2059,8 +2068,10 @@ if(!Number.isFinite(early_mixer_shutoff_lbs) || early_mixer_shutoff_lbs < 0 || e
   throw new Error('Ingredient Mixer Early Shutoff must be 0..100 lbs');
 }
 
-await apiPost('/api/relaycfg', { gpios, active_high, shutdown_relay, mixer_on_relay, mixer_off_relay, mixer_relay: mixer_on_relay, pulse_ms, delay_ms, shutdown_pulse_ms, dump_mixer_early_off_lbs, early_mixer_shutoff_relay, early_mixer_shutoff_lbs });
+const result = await apiPost('/api/relaycfg', { gpios, active_high, relay_expansion_enabled, shutdown_relay, mixer_on_relay, mixer_off_relay, mixer_relay: mixer_on_relay, pulse_ms, delay_ms, shutdown_pulse_ms, dump_mixer_early_off_lbs, early_mixer_shutoff_relay, early_mixer_shutoff_lbs });
+      if(!result) return;
       alert('Relay config saved.');
+      await loadRelayCfg();
     }catch(e){ alert(e.message); }
   }
 
