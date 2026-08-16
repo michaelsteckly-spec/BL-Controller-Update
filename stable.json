@@ -9,13 +9,14 @@
     "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController_1.0.0-hmipush-dev1.6.bin"
   },
 
- "filesystem": {
-  "version": "1.0.0-web-v30",
-  "size": 124997,
-  "sha256": "227061ab265a8a91d9e85dcb4884d4d5715f1078434fd9b007277df39e2ad397",
-  "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index_1.0.0-web-v30.html",
-  "path": "/index.html"
-}
+  "filesystem": {
+    "version": "1.0.0-web-v30",
+    "size": 124997,
+    "sha256": "227061ab265a8a91d9e85dcb4884d4d5715f1078434fd9b007277df39e2ad397",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index_1.0.0-web-v30.html",
+    "path": "/index.html"
+  },
+
   "hmi": {
     "version": "1.0.5-hmi-network-faults1",
     "size": 778992,
