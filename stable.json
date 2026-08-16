@@ -3,9 +3,9 @@
   "channel": "stable",
 
   "controller": {
-    "version": "1.0.0-hmipush-dev1",
-    "size": 1407712,
-    "sha256": "7ba3acf513739ed335bf3f627751486a204c8a826c6145e7670a88bf433f284b",
+    "version": "1.0.0-hmipush-dev1.3",
+    "size": 1405120,
+    "sha256": "daa5d31866e33ded39ad283b5c9ca6e9bc20d9b5da1c0939e3e43ade48afd8af",
     "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController.ino.bin"
   },
 
