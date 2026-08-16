@@ -4,11 +4,11 @@
   "channel": "stable",
 
   "controller": {
-    "version": "1.0.0-hmipush-dev1.3",
-    "size": 1405120,
-    "sha256": "daa5d31866e33ded39ad283b5c9ca6e9bc20d9b5da1c0939e3e43ade48afd8af",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController.ino.bin"
-  },
+   "version": "1.0.0-hmipush-dev1.4",
+  "size": 1405344,
+  "sha256": "1dd708f9817169c850d7265b06551e5caf03dd5fc7087e768172c213ce1e7bb7",
+  "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController.ino.bin"
+}
 
   "filesystem": {
     "version": "1.0.0-web-v29",
