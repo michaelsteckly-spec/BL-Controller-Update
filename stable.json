@@ -2,9 +2,9 @@
   "product": "barnlogic-feed-controller",
   "channel": "stable",
   "controller": {
-    "version": "1.0.0-ota-dev2b",
-    "size": 1325456,
-    "sha256": "ebcf0148b956d1d2b4d289f5dd7972ab607b8733245876ae67a52d033a34691a",
+    "version": "1.0.0-ota-crashtest1",
+    "size": 1391344,
+    "sha256": "bd0f7a102a3327ce453cc4505c613c06709f0b1d44e4ed3280ac141b3e7534e3",
     "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController.ino.bin"
   }
 }
