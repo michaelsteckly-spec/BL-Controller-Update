@@ -18,9 +18,9 @@
   },
 
   "hmi": {
-    "version": "1.0.3-hmi-performance1",
-    "size": 778336,
-    "sha256": "6b5fd4b7f8f9c0db0e3dd6d7b17f8e0bda5e63ec34a2f8d54df7d8a1d8c9a6c2",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI.ino.bin"
-  }
+   "version": "1.0.3-hmi-performance1",
+  "size": 777360,
+  "sha256": "30961c7824ba078d9522581399f2b4f121e87067827aea0b55ab34d1b038bf94",
+  "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI.ino.bin"
+
 }
