@@ -1,0 +1,11 @@
+{
+  "product": "barnlogic-feed-controller",
+  "channel": "stable",
+  "filesystem": {
+    "version": "1.0.1-uptime1",
+    "path": "/index.html",
+    "size": 122593,
+    "sha256": "4e74c8329b829b08be4bdb7bdee53627f92e8494ab30811536571bde7d629974",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index_uptime1.html"
+  }
+}
