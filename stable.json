@@ -10,13 +10,12 @@
   },
 
   "filesystem": {
-    "version": "1.0.0-web-v29",
-    "size": 124123,
-    "sha256": "59ffd6b50fbe88f4b079348d9510e125d38234317edba1d8c852402cdbfbeb7b",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index.html",
-    "path": "/index.html"
-  },
-
+  "version": "1.0.0-web-v30",
+  "size": 124997,
+  "sha256": "227061ab265a8a91d9e85dcb4884d4d5715f1078434fd9b007277df39e2ad397",
+  "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index.html",
+  "path": "/index.html"
+}
   "hmi": {
     "version": "1.0.5-hmi-network-faults1",
     "size": 778992,
