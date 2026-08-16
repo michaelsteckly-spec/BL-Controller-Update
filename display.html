@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Remote Weight Display</title>
+  <style>
+    body{margin:0;background:#000;color:#fff;font-family:system-ui,Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh}
+    .wrap{width:min(980px,92vw);text-align:center}
+    .label{font-size:clamp(18px,2.5vw,28px);opacity:.9;letter-spacing:.12em}
+    .weight{font-size:clamp(64px,10vw,140px);font-weight:800;margin:18px 0}
+    .sub{font-size:clamp(18px,2.5vw,28px);opacity:.9;margin-top:-8px}
+    .meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+    .pill{border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 14px;font-size:clamp(14px,2vw,18px)}
+    .alarm{background:#b91c1c;border-color:#b91c1c}
+    .ok{background:#166534;border-color:#166534}
+    .warn{background:#a16207;border-color:#a16207}
+    .btn{background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:10px 14px;font-size:16px}
+    .btn:active{transform:scale(0.98)}
+    .footer{position:fixed;bottom:12px;left:12px;right:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;opacity:0.95}
+    .hint{position:fixed;top:10px;left:12px;right:12px;text-align:center;font-size:14px;opacity:0.75}
+    a{color:#fff}
+
+    #age{font-size:13px;opacity:0.65}
+    
+    .row{display:flex;gap:22px;justify-content:center;align-items:stretch;flex-wrap:wrap;margin-top:10px}
+    .card{border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:18px 22px;min-width:min(360px,92vw);background:rgba(255,255,255,.04);backdrop-filter:blur(4px)}
+    .card .label{font-size:16px;letter-spacing:.12em;font-weight:800;opacity:.75}
+    .unit{font-size:.45em;font-weight:800;opacity:.9}
+    .targetVal{font-size:clamp(64px,10vw,140px);line-height:1.0;font-weight:900;margin-top:8px}
+    @media (max-width:640px){.targetVal{font-size:clamp(64px,10vw,140px);line-height:1.0;font-weight:900;margin-top:8px}}
+  </style>
+</head>
+<body>
+  <div class="hint" id="hint"></div>
+
+  <div class="wrap">
+    <div class="row">
+      <div class="card current">
+        <div class="label">CURRENT</div>
+        <div class="weight" style="color:#00ff55"><span id="w">0.0</span> <span id="u" class="unit">lb</span></div>
+      </div>
+
+      <div class="card target">
+        <div class="label">TARGET</div>
+        <div class="targetVal"><span id="t">—</span> <span class="unit" id="tu">lb</span></div>
+      </div>
+    </div>
+
+<div class="meta">
+                  <div id="age"></div>
+<div id="tname"></div>
+<div id="mode" class="pill">MODE: —</div>
+      <div id="phase" class="pill">PHASE: —</div>
+      <div id="fs" class="pill ok">FAILSAFE: OK</div>
+      <div id="net" class="pill">NET: —</div>
+      <div id="gross" class="pill">GROSS: —</div>
+      <div id="conn" class="pill warn">STATUS: CONNECTING</div>
+    </div>
+  </div>
+
+<script>
+  // --- Remote display tuning ---
+  // One in-flight request at a time (prevents "missed" updates caused by overlap).
+  // Smoothing makes the big numbers feel steadier on imperfect WiFi.
+  let _inFlight = false;
+  let _lastShown = null;
+  let _lastOkMs = 0;
+
+// --- API base selection ---
+// If you open this page from a DIFFERENT device/server than the controller,
+// add ?host=192.168.x.x (or a tailscale name/IP):
+//   http://whatever/display.html?host=192.168.0.197
+const qs = new URLSearchParams(location.search);
+let apiBase = location.origin;
+const host = (qs.get('host') || '').trim();
+if(host){
+  apiBase = (host.startsWith('http://') || host.startsWith('https://')) ? host.replace(/\/$/, '') : (location.protocol + '//' + host);
+}
+
+const hint = document.getElementById('hint');
+if(host){
+  hint.innerHTML = `API: <b>${apiBase}</b> (override via <code>?host=</code>)`;
+}else{
+  hint.innerHTML = `API: <b>${apiBase}</b> (use <code>?host=</code> if this page isn't served by the controller)`;
+}
+
+const phaseNames = {0:"IDLE",1:"RECIPE_RUNNING",2:"RECIPE_COMPLETE",3:"MIX_PHASE",4:"DUMP_PRE_VERIFY",5:"DUMP_RUNNING",6:"COMPLETE",7:"FAULT"};
+
+function setConn(ok, msg){
+  const c = document.getElementById('conn');
+  if(ok){
+    c.textContent = 'STATUS: ONLINE';
+    c.className = 'pill ok';
+  }else{
+    c.textContent = 'STATUS: ' + (msg || 'OFFLINE');
+    c.className = 'pill alarm';
+  }
+}
+
+async function apiGet(path, signal){
+  const url = apiBase + path + (path.includes('?') ? '&' : '?') + 'ts=' + Date.now();
+  const r = await fetch(url, { cache: 'no-store', keepalive: true });
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  return await r.json();
+}
+
+async function apiPost(path){
+  const url = apiBase + path + (path.includes('?') ? '&' : '?') + 'ts=' + Date.now();
+  const r = await fetch(url, { method:'POST', cache:'no-store', signal: signal });
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  return await r.text();
+}
+
+async function tick(){
+  try{
+    const s = await apiGet('/api/status');
+    setConn(true);
+
+    const units = (s.units || 'lb');
+    if(L.u!==units){ document.getElementById('u').textContent = units; L.u=units; }
+    const tu = document.getElementById('tu');
+    if(tu && L.tu!==units){ tu.textContent = units; L.tu=units; }
+
+    const w = Number(s.weight);
+    const _wTxt = Number.isFinite(w) ? w.toFixed(1) : '0.0';
+    if(L.w!==_wTxt){ document.getElementById('w').textContent = _wTxt; L.w=_wTxt; }
+
+    const target = Number(s.target);
+    const tn = (s.target_name || '').trim();
+    const tEl = document.getElementById('t');
+    if(tEl){
+      if(Number.isFinite(target) && (Math.abs(target) > 0.0001 || tn)){
+        const _tTxt = Number.isFinite(target) ? target.toFixed(1) : '—';
+        if(L.t!==_tTxt){ tEl.textContent = _tTxt; L.t=_tTxt; }
+      }else{
+        const _tTxt = '—';
+        if(L.t!==_tTxt){ tEl.textContent = _tTxt; L.t=_tTxt; }
+      }
+    }
+    // Put target name into meta, if present
+    const tNameEl = document.getElementById('tname');
+    if(tNameEl){
+      const _tnTxt = tn ? ('TARGET NAME: ' + tn) : '';
+      if(L.tname!==_tnTxt){ tNameEl.textContent = _tnTxt; L.tname=_tnTxt; }
+    }
+
+    const _modeTxt = 'MODE: ' + (s.mode===0?'AUTO':'MANUAL');
+    if(L.mode!==_modeTxt){ document.getElementById('mode').textContent = _modeTxt; L.mode=_modeTxt; }
+    const _phaseTxt = 'PHASE: ' + (phaseNames[s.phase] ?? s.phase);
+    if(L.phase!==_phaseTxt){ document.getElementById('phase').textContent = _phaseTxt; L.phase=_phaseTxt; }
+
+    document.getElementById('net').textContent = 'NET: ' + (Number.isFinite(Number(s.net)) ? Number(s.net).toFixed(1) : '—') + ' ' + units;
+    document.getElementById('gross').textContent = 'GROSS: ' + (Number.isFinite(Number(s.gross)) ? Number(s.gross).toFixed(1) : '—') + ' ' + units;
+
+    const fs=document.getElementById('fs');
+    if(s.failsafe){ fs.textContent='FAILSAFE: TRIPPED'; fs.className='pill alarm'; }
+    else { fs.textContent='FAILSAFE: OK'; fs.className='pill ok'; }
+
+  }catch(e){
+    // IMPORTANT: don't swallow errors silently — show them
+    setConn(false, (e && e.message) ? e.message : 'OFFLINE');
+  }
+}
+tick();
+
+
+  function _setAgeLine(s){
+    const ageEl = document.getElementById('age');
+    if(!ageEl) return;
+    if(!s || typeof s.uptime_ms !== 'number'){ ageEl.textContent = ''; return; }
+    const now = Date.now();
+    if(!_lastOkMs) _lastOkMs = now;
+    const sinceOk = now - _lastOkMs;
+    ageEl.textContent = 'Last update: ' + Math.round(sinceOk) + ' ms ago';
+  }
+
+      // Render batching: apply at most once per animation frame
+  let _pendingStatus = null;
+  let _renderQueued = false;
+  function queueRender(s){
+    _pendingStatus = s;
+    if(_renderQueued) return;
+    _renderQueued = true;
+    requestAnimationFrame(() => {
+      _renderQueued = false;
+      if(_pendingStatus) applyStatus(_pendingStatus);
+    });
+  }
+
+function applyStatus(s){
+    if(!s) return;
+    // Lightweight change detection to reduce layout thrash
+    if(!window._lastDisp) window._lastDisp = {};
+    const L = window._lastDisp;
+
+    const units = (s.units || 'lb');
+    const uEl = document.getElementById('u');
+    if(uEl) uEl.textContent = units;
+    const tu = document.getElementById('tu');
+    if(tu && L.tu!==units){ tu.textContent = units; L.tu=units; }
+
+    const w = Number(s.weight);
+    const wEl = document.getElementById('w');
+    if(wEl) wEl.textContent = Number.isFinite(w) ? w.toFixed(1) : '0.0';
+
+    const target = Number(s.target);
+    const tn = (s.target_name || '').trim();
+    const tEl = document.getElementById('t');
+    if(tEl){
+      if(Number.isFinite(target) && (Math.abs(target) > 0.0001 || tn)){
+        const _tTxt = target.toFixed(1);
+        if(L.t!==_tTxt){ tEl.textContent = _tTxt; L.t=_tTxt; }
+      }else{
+        const _tTxt = '—';
+        if(L.t!==_tTxt){ tEl.textContent = _tTxt; L.t=_tTxt; }
+      }
+    }
+    const tNameEl = document.getElementById('tname');
+    if(tNameEl){ const _tnTxt = tn ? ('TARGET NAME: ' + tn) : '';
+      if(L.tname!==_tnTxt){ tNameEl.textContent = _tnTxt; L.tname=_tnTxt; } }
+
+    const modeEl = document.getElementById('mode');
+    if(modeEl) modeEl.textContent = 'MODE: ' + (s.mode===0?'AUTO':'MANUAL');
+    const phaseEl = document.getElementById('phase');
+    if(phaseEl) phaseEl.textContent = 'PHASE: ' + (s.phase_name || '');
+    const recipeEl = document.getElementById('recipe');
+    if(recipeEl) recipeEl.textContent = 'RECIPE: ' + (s.active_recipe || '');
+    const wifiEl = document.getElementById('wifi');
+    if(wifiEl) wifiEl.textContent = 'RSSI: ' + ((s.rssi===undefined || s.rssi===null) ? '—' : s.rssi);
+
+    _setAgeLine(s);
+  }
+
+  // --- WebSocket push (preferred) ---
+  let _ws = null;
+  let _useWS = false;
+  let _wsRetryMs = 400;
+
+  function makeWsUrl(){
+    const httpBase = apiBase();
+    const u = new URL(httpBase);
+    u.protocol = (u.protocol === 'https:') ? 'wss:' : 'ws:';
+    u.pathname = '/ws';
+    u.search = '';
+    u.hash = '';
+    return u.toString();
+  }
+
+  function startWebSocket(){
+    try{
+      const url = makeWsUrl();
+      _ws = new WebSocket(url);
+
+      _ws.onopen = () => {
+        _useWS = true;
+        _wsRetryMs = 400;
+        setConn(true);
+        const hint = document.getElementById('hint');
+        if(hint) hint.textContent = 'WS CONNECTED';
+      };
+
+      _ws.onmessage = (ev) => {
+        try{
+          const s = JSON.parse(ev.data);
+          _lastOkMs = Date.now();
+          setConn(true);
+          queueRender(s);
+        }catch(e){}
+      };
+
+      _ws.onclose = () => {
+        _useWS = false;
+        setConn(false, 'WS closed');
+        const hint = document.getElementById('hint');
+        if(hint) hint.textContent = 'WS DISCONNECTED';
+        // start/keep polling as a fallback
+        setTimeout(()=>{ if(!_useWS) _pollLoop(); }, 200);
+        // retry with backoff
+        const wait = Math.min(4000, _wsRetryMs);
+        _wsRetryMs = Math.min(4000, Math.round(_wsRetryMs * 1.6));
+        setTimeout(startWebSocket, wait);
+      };
+
+      _ws.onerror = () => {
+        // Let onclose handle the retry
+      };
+    }catch(e){
+      _useWS = false;
+      setTimeout(()=>{ if(!_useWS) _pollLoop(); }, 200);
+      setTimeout(startWebSocket, 1500);
+    }
+  }
+
+async function _pollLoop(){
+    if(_useWS){
+      // WebSocket is active; don't poll.
+      setTimeout(_pollLoop, 500);
+      return;
+    }
+    if(_inFlight){ return; }
+    _inFlight = true;
+
+    const ac = new AbortController();
+    const timeoutMs = 900;
+    const t = setTimeout(() => ac.abort(), timeoutMs);
+
+    try{
+      const s = await apiGet('/api/status', ac.signal);
+      _lastOkMs = Date.now();
+      setConn(true);
+
+      queueRender(s);
+
+    }catch(e){
+      setConn(false, e && e.name ? e.name : String(e));
+    }finally{
+      clearTimeout(t);
+      _inFlight = false;
+      setTimeout(_pollLoop, 120); // fast mode polling (~8 Hz), after completion
+    }
+  }
+
+  // kick off
+  startWebSocket();
+  setTimeout(()=>{ if(!_useWS) _pollLoop(); }, 1200);
+</script>
+
+  <div class="footer">
+    <button class="btn" onclick="apiPost('/api/zero').catch(()=>{})">Zero Net</button>
+    <button class="btn" onclick="apiPost('/api/zero_gross').catch(()=>{})">Zero Gross</button>
+  </div>
+
+</body>
+</html>
