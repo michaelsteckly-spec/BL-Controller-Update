@@ -2,22 +2,22 @@
   "product": "barnlogic-feed-controller",
   "channel": "stable",
   "controller": {
-    "version": "1.0.0-watchdog-serial-test1",
-    "size": 1407968,
-    "sha256": "78937375b446e6e2f0751fbfa036d414d15585583019a28e50cffb1dd35bda43",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController_1.0.0-watchdog-serial-test1.bin"
+    "version": "1.0.0-watchdog-serial-test2",
+    "size": 1407984,
+    "sha256": "7e01e7a86a02d0a43961a19118f97f2a978897c01f91b6176848882acd46c6d2",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController_1.0.0-watchdog-serial-test2.bin"
   },
   "filesystem": {
-    "version": "1.0.0-web-v31-dashboard-uptime",
-    "size": 127129,
-    "sha256": "d5bf68bfbf094fb9388af1abd9f912e60b45cb42f3c9957715f951059ba5e365",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index_1.0.0-web-v31-dashboard-uptime.html",
+    "version": "1.0.0-web-watchdog-test2",
+    "size": 128502,
+    "sha256": "7c5ae6edff7fb62abed90dfc1ccbfeb88b7910f64a61d8f25dee8ec86de745a3",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index_1.0.0-web-watchdog-test2.html",
     "path": "/index.html"
   },
   "hmi": {
-    "version": "1.0.7-serial-monitor-test1",
+    "version": "1.0.8-serial-monitor-fix1",
     "size": 780464,
-    "sha256": "083c9edffff802c2ce6b964ef278470efa913d1d32be7e9952076a6ddbd08b9b",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI_1.0.7-serial-monitor-test1.bin"
+    "sha256": "db449bc1d08c968efbdf8d7882c3bbf4e80df151a53931143a385a82a03a4154",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI_1.0.8-serial-monitor-fix1.bin"
   }
 }
