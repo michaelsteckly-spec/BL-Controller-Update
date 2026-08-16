@@ -3,9 +3,9 @@
   "channel": "stable",
 
   "controller": {
-    "version": "1.0.0-hmipush-dev1.3",
-    "size": 1405120,
-    "sha256": "daa5d31866e33ded39ad283b5c9ca6e9bc20d9b5da1c0939e3e43ade48afd8af",
+    "version": "1.0.0-hmipush-dev1.4",
+    "size": 1405344,
+    "sha256": "1dd708f9817169c850d7265b06551e5caf03dd5fc7087e768172c213ce1e7bb7",
     "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController.ino.bin"
   },
 
@@ -18,9 +18,9 @@
   },
 
   "hmi": {
-    "version": "1.0.1-hmipush-test1",
-    "size": 775712,
-    "sha256": "20b874036d8bd4649dd7bb794a7ea0289af67794955b7571d688360558ce5d5e",
+    "version": "1.0.2-hmipush-update-screen",
+    "size": 777008,
+    "sha256": "bcab8703a6e5f706fe75c698680ef1408a7fbce8d6aecb389166867d9d3e5e48",
     "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI.ino.bin"
   }
 }
