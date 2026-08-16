@@ -3,10 +3,10 @@
   "channel": "stable",
 
   "controller": {
-    "version": "1.0.0-hmipush-dev1.4",
-    "size": 1405344,
-    "sha256": "1dd708f9817169c850d7265b06551e5caf03dd5fc7087e768172c213ce1e7bb7",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController.ino.bin"
+    "version": "1.0.0-hmipush-dev1.6",
+    "size": 1407184,
+    "sha256": "4341ba1b158907302f91bea43582ee5602c235f78fb91967879d430bf47fe916",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController_1.0.0-hmipush-dev1.6.bin"
   },
 
   "filesystem": {
@@ -18,9 +18,9 @@
   },
 
   "hmi": {
-    "version": "1.0.3-hmi-performance1",
-    "size": 777360,
-    "sha256": "30961c7824ba078d9522581399f2b4f121e87067827aea0b55ab34d1b038bf94",
-    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI_1.0.3.bin"
+    "version": "1.0.5-hmi-network-faults1",
+    "size": 778992,
+    "sha256": "93aedfffd5b1e0e252600266e0bf72e3a045cd2d713b14e130e956bfd4502929",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI_1.0.5-hmi-network-faults1.bin"
   }
 }
