@@ -1,0 +1,512 @@
+<!doctype html>
+<!-- BARNLOGIC_UI_VERSION:1.0.1-web-historysync1 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173f32">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Barn Logic History"> 
+  <style>
+
+:root{
+  --green:#173f32;--green2:#235d4a;--bg:#f3f5f6;--card:#fff;--text:#18221e;
+  --muted:#67736d;--line:#dbe1de;--good:#176b35;--bad:#a22626;--warn:#9a6400;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100vh}
+button,input,select{font:inherit}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;background:var(--green);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;box-shadow:0 1px 8px #0003}
+.brand{font-weight:800;font-size:17px}.subtitle{font-size:11px;opacity:.72}.icon-btn{border:0;background:#ffffff18;color:#fff;border-radius:10px;width:42px;height:42px;font-size:22px}
+.drawer{position:fixed;z-index:40;left:0;top:0;bottom:0;width:275px;background:#fff;padding:calc(20px + env(safe-area-inset-top)) 12px 20px;transform:translateX(-110%);transition:.18s ease;box-shadow:5px 0 25px #0003}
+.drawer.open{transform:none}.drawer-title{font-size:20px;font-weight:800;padding:8px 10px 20px;color:var(--green)}
+.nav{width:100%;text-align:left;border:0;background:transparent;padding:13px 14px;border-radius:10px;font-weight:650;color:#34403b;margin:2px 0}
+.nav.active{background:#e7f0ec;color:var(--green)}
+.backdrop{position:fixed;z-index:30;inset:0;background:#0006}.hidden{display:none!important}
+main{max-width:1050px;margin:auto;padding:18px 14px calc(28px + env(safe-area-inset-bottom))}
+.view{display:none}.view.active{display:block}
+h1{font-size:28px;margin:0 0 4px}h2{font-size:19px;margin:0 0 10px}.page-head p,.card p{color:var(--muted);margin:0}
+.page-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:6px 0 18px}
+.primary,.secondary,.danger,.small-btn,.link-btn,.back-btn{border:0;border-radius:10px;padding:11px 14px;font-weight:750}
+.primary{background:var(--green);color:#fff}.wide{width:100%;margin-top:12px}.danger{background:#a22626;color:#fff}.small-btn{background:#ffffffcc;color:#27342f;padding:7px 10px}.link-btn,.back-btn{background:transparent;color:var(--green);padding:7px}.back-btn{font-size:16px;margin-bottom:8px}
+.secondary{background:#e7efeb;color:var(--green)}.head-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}.field-label{display:block;font-size:12px;font-weight:750;margin:16px 0 7px}.card input[type=text]{width:100%;border:1px solid #cbd4d0;border-radius:10px;background:#fff;padding:12px}
+.banner{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:16px;border:1px solid}.banner.info{background:#eaf2f7;border-color:#b8ceda;color:#254455}.banner.good{background:#e6f4ea;border-color:#b6d8c0;color:#145f31}.banner.bad{background:#fdecec;border-color:#e5bcbc;color:#8d2020}.banner strong{display:block}.banner div div{font-size:12px;margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}.stat{background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px}.stat span{display:block;font-size:12px;color:var(--muted);min-height:30px}.stat strong{font-size:29px;display:block;margin:2px 0}.stat small{color:var(--muted)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;margin:12px 0}.section-head{display:flex;justify-content:space-between;align-items:center}
+.filters{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:12px}.filters input,.filters select,input[type=file]{width:100%;border:1px solid #cbd4d0;border-radius:10px;background:#fff;padding:12px}
+.list{display:flex;flex-direction:column;gap:9px}.empty{color:var(--muted);padding:18px 4px}
+.row-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px}.row-card.clickable{cursor:pointer}.row-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.row-title{font-size:17px;font-weight:800}.meta{font-size:12px;color:var(--muted);margin-top:3px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:11px}.metric small{display:block;color:var(--muted);font-size:10px}.metric strong{font-size:14px}.pill{border-radius:999px;padding:5px 8px;font-size:10px;font-weight:800;white-space:nowrap}.pill.good{background:#e6f4ea;color:var(--good)}.pill.bad{background:#fdecec;color:var(--bad)}.pill.warn{background:#fff4d6;color:var(--warn)}
+.summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:13px 0}.summary{background:#fff;border:1px solid var(--line);border-radius:11px;padding:12px}.summary small{display:block;color:var(--muted)}.summary strong{display:block;font-size:20px;margin-top:3px}
+.ingredient{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px;margin:8px 0}.ingredient-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.result-box{background:#f5f7f6;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px;white-space:pre-wrap;font-size:13px}.danger-card{border-color:#e8c7c7}
+ol{padding-left:22px;color:#3e4944}li{margin:8px 0}
+@media(max-width:560px){.page-head{align-items:flex-start}.head-actions{width:100%}.head-actions button{flex:1}.page-head:has(.head-actions){flex-direction:column}}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}.filters{grid-template-columns:1fr 220px}.summary-grid{grid-template-columns:repeat(4,1fr)}main{padding:24px}.topbar{padding-left:22px;padding-right:22px}}
+
+</style>
+  <title>Barn Logic History</title>
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuBtn" class="icon-btn" aria-label="Menu">☰</button>
+    <div>
+      <div class="brand">Barn Logic History</div>
+      <div class="subtitle">iPhone web app prototype</div>
+    </div>
+  </header>
+
+  <div id="drawerBackdrop" class="backdrop hidden"></div>
+  <aside id="drawer" class="drawer">
+    <div class="drawer-title">Barn Logic History</div>
+    <button class="nav active" data-view="dashboard">Dashboard</button>
+    <button class="nav" data-view="batches">Batches</button>
+    <button class="nav" data-view="faults">Faults</button>
+    <button class="nav" data-view="import">Import</button>
+    <button class="nav" data-view="settings">Settings</button>
+  </aside>
+
+  <main id="app">
+    <section id="dashboard" class="view active">
+      <div id="statusBanner" class="banner info">
+        <div>
+          <strong>Ready</strong>
+          <div id="statusDetail">Import the history CSV files downloaded from your Feed Controller.</div>
+        </div>
+        <button id="dismissBanner" class="small-btn">Dismiss</button>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Stored locally on this iPhone.</p>
+        </div>
+        <div class="head-actions">
+          <button id="syncControllerBtn" class="primary">Sync Controller</button>
+          <button class="secondary" data-go="import">Import CSV</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <article class="stat"><span>Today</span><strong id="todayCount">0</strong><small>batches</small></article>
+        <article class="stat"><span>Completed</span><strong id="completeCount">0</strong><small>all history</small></article>
+        <article class="stat"><span>Cancelled / incomplete</span><strong id="problemCount">0</strong><small>all history</small></article>
+        <article class="stat"><span>Active faults</span><strong id="faultCount">0</strong><small>latest controller boot</small></article>
+      </div>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>Recent batches</h2>
+          <button class="link-btn" data-go="batches">View all</button>
+        </div>
+        <div id="recentBatches" class="list empty">No batch history imported yet.</div>
+      </section>
+    </section>
+
+    <section id="batches" class="view">
+      <div class="page-head">
+        <div><h1>Batches</h1><p>Completed and incomplete recipe history.</p></div>
+      </div>
+      <div class="filters">
+        <input id="batchSearch" type="search" placeholder="Search recipe name">
+        <select id="batchStatus">
+          <option value="all">All results</option>
+          <option value="completed">Completed</option>
+          <option value="problem">Cancelled / incomplete</option>
+        </select>
+      </div>
+      <div id="batchList" class="list empty">No batch history imported yet.</div>
+    </section>
+
+    <section id="batchDetail" class="view">
+      <button id="backToBatches" class="back-btn">‹ Back to batches</button>
+      <div id="batchDetailContent"></div>
+    </section>
+
+    <section id="faults" class="view">
+      <div class="page-head">
+        <div><h1>Faults</h1><p>Controller fault and clear events.</p></div>
+      </div>
+      <div class="filters">
+        <input id="faultSearch" type="search" placeholder="Search code, title, or detail">
+      </div>
+      <div id="faultList" class="list empty">No fault history imported yet.</div>
+    </section>
+
+    <section id="import" class="view">
+      <div class="page-head">
+        <div><h1>Import</h1><p>Choose CSV files downloaded from the Feed Controller.</p></div>
+      </div>
+      <section class="card import-card">
+        <h2>Import history files</h2>
+        <p>You can select the feed-history CSV, fault-history CSV, or both at the same time. Existing records are skipped automatically.</p>
+        <input id="filePicker" type="file" accept=".csv,text/csv" multiple>
+        <button id="importBtn" class="primary wide">Import selected files</button>
+        <div id="importResult" class="result-box">No files selected.</div>
+      </section>
+      <section class="card">
+        <h2>Suggested iPhone workflow</h2>
+        <ol>
+          <li>Connect the iPhone to the Feed Controller through your VPN.</li>
+          <li>Download the feed and fault CSV files in Safari.</li>
+          <li>Open Barn Logic History from the Home Screen.</li>
+          <li>Choose the downloaded CSV files here.</li>
+        </ol>
+      </section>
+    </section>
+
+    <section id="settings" class="view">
+      <div class="page-head">
+        <div><h1>Settings</h1><p>PWA and local-storage controls.</p></div>
+      </div>
+      <section class="card">
+        <h2>Feed Controller connection</h2>
+        <p>Enter the controller address shown on the diagnostic display. The app remembers it on this device.</p>
+        <label class="field-label" for="controllerAddress">Controller address</label>
+        <input id="controllerAddress" type="text" inputmode="url" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="http://feedcontroller.local or http://192.168.1.148">
+        <button id="syncControllerBtnSettings" class="primary wide">Sync from Controller</button>
+        <div id="syncResult" class="result-box">Ready to connect.</div>
+      </section>
+      <section class="card">
+        <h2>Install on iPhone</h2>
+        <p>In Safari, tap <strong>Share</strong> → <strong>Add to Home Screen</strong>. After that, Barn Logic History opens like a standalone app.</p>
+      </section>
+      <section class="card danger-card">
+        <h2>Local history</h2>
+        <p id="storageSummary">Loading…</p>
+        <button id="clearDataBtn" class="danger">Delete all local history</button>
+      </section>
+    </section>
+  </main>
+
+  <script>
+
+const DB_NAME = "barnlogic-history-pwa";
+const DB_VERSION = 1;
+const FEED = "feed";
+const FAULT = "fault";
+let db;
+let feedRows = [], faultRows = [], batches = [];
+const CONTROLLER_ADDRESS_KEY = "barnlogic-controller-address";
+let controllerSyncBusy = false;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function openDb(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=()=>{
+      const d=req.result;
+      if(!d.objectStoreNames.contains(FEED)) d.createObjectStore(FEED,{keyPath:"id"});
+      if(!d.objectStoreNames.contains(FAULT)) d.createObjectStore(FAULT,{keyPath:"id"});
+    };
+    req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+  });
+}
+function all(store){return new Promise((resolve,reject)=>{const r=db.transaction(store).objectStore(store).getAll();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+function putMany(store,rows){return new Promise((resolve,reject)=>{
+  let added=0, done=0;
+  if(!rows.length) return resolve(0);
+  const tx=db.transaction(store,"readwrite"), os=tx.objectStore(store);
+  rows.forEach(row=>{
+    const get=os.get(row.id);
+    get.onsuccess=()=>{
+      if(get.result){done++;return}
+      const p=os.add(row); p.onsuccess=()=>{added++;done++}; p.onerror=()=>{done++};
+    };
+  });
+  tx.oncomplete=()=>resolve(added);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+})}
+function clearStore(store){return new Promise((resolve,reject)=>{const tx=db.transaction(store,"readwrite");tx.objectStore(store).clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}
+
+function csvParse(text){
+  const rows=[]; let row=[], field="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if(q){
+      if(c=='"' && n=='"'){field+='"';i++}
+      else if(c=='"') q=false;
+      else field+=c;
+    }else{
+      if(c=='"') q=true;
+      else if(c==','){row.push(field.trim());field=""}
+      else if(c=='\n'){row.push(field.trim());field=""; if(row.some(x=>x!=="")) rows.push(row); row=[]}
+      else if(c!='\r') field+=c;
+    }
+  }
+  if(field!==""||row.length){row.push(field.trim());if(row.some(x=>x!==""))rows.push(row)}
+  if(rows.length<1) return [];
+  const headers=rows.shift().map(h=>h.trim());
+  return rows.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??""])));
+}
+const num=v=>v===""||v==null?null:Number(v);
+const int=v=>Number.parseInt(v||"0",10)||0;
+const idFor=(kind,r)=> kind==="feed"
+  ? `feed|${r.boot_id}|${r.uptime_ms}|${r.record_type}|${r.recipe}|${r.ingredient}|${r.target_lbs}|${r.actual_lbs}|${r.result}|${r.timestamp}`
+  : `fault|${r.boot_id}|${r.uptime_ms}|${r.record_type}|${r.code}|${r.title}|${r.detail}|${r.timestamp}`;
+
+function normalizeFeed(r){return{
+  id:idFor("feed",r),bootId:int(r.boot_id),uptimeMs:Number(r.uptime_ms||0),recordType:r.record_type||"",
+  recipe:r.recipe||"",headCount:int(r.head_count),ingredient:r.ingredient||null,targetLbs:num(r.target_lbs),
+  actualLbs:num(r.actual_lbs),result:r.result||"",timestamp:r.timestamp||""
+}}
+function normalizeFault(r){return{
+  id:idFor("fault",r),bootId:int(r.boot_id),uptimeMs:Number(r.uptime_ms||0),recordType:r.record_type||"",
+  code:r.code||"",title:r.title||"",detail:r.detail||"",action:r.action||"",timestamp:r.timestamp||""
+}}
+
+function buildBatches(rows){
+  const sorted=[...rows].sort((a,b)=>a.bootId-b.bootId||a.uptimeMs-b.uptimeMs);
+  const out=[]; let cur=null, ing=null;
+  for(const r of sorted){
+    if(r.recordType==="BATCH_START"){
+      if(cur) out.push(cur);
+      cur={batchId:`${r.bootId}-${r.uptimeMs}`,bootId:r.bootId,startUptimeMs:r.uptimeMs,recipe:r.recipe,
+        headCount:r.headCount,targetLbs:r.targetLbs||0,actualLbs:null,result:r.result||"",startedAt:r.timestamp,
+        completedAt:"",endUptimeMs:null,ingredients:[]}; ing=null;
+    }else if(r.recordType==="ING_START" && cur){
+      ing={name:r.ingredient||"Ingredient",targetLbs:r.targetLbs,actualLbs:null,result:r.result||"",startedAt:r.timestamp,completedAt:""};
+      cur.ingredients.push(ing);
+    }else if(r.recordType==="ING_DONE" && cur){
+      if(!ing){
+        ing=[...cur.ingredients].reverse().find(x=>!x.completedAt && x.name.toLowerCase()===(r.ingredient||"Ingredient").toLowerCase());
+        if(!ing){ing={name:r.ingredient||"Ingredient",targetLbs:r.targetLbs,actualLbs:null,result:"",startedAt:"",completedAt:""};cur.ingredients.push(ing)}
+      }
+      if(ing.targetLbs==null) ing.targetLbs=r.targetLbs; ing.actualLbs=r.actualLbs; ing.result=r.result||""; ing.completedAt=r.timestamp; ing=null;
+    }else if(r.recordType==="BATCH_DONE" && cur){
+      if(r.targetLbs!=null) cur.targetLbs=r.targetLbs; cur.actualLbs=r.actualLbs; cur.result=r.result||""; cur.completedAt=r.timestamp;cur.endUptimeMs=r.uptimeMs;
+      out.push(cur);cur=null;ing=null;
+    }
+  }
+  if(cur) out.push(cur);
+  return out.sort((a,b)=>b.bootId-a.bootId||b.startUptimeMs-a.startUptimeMs);
+}
+function isComplete(b){return (b.result||"").toUpperCase()==="COMPLETED" || (b.result||"").toUpperCase()==="OK" || !!b.completedAt}
+function diff(b){return b.actualLbs==null?null:b.actualLbs-b.targetLbs}
+function fmtLb(v){return v==null?"—":`${Number(v).toFixed(1)} lb`}
+function fmtDiff(v){return v==null?"—":`${v>=0?"+":""}${v.toFixed(1)} lb`}
+function fmtTime(ts,boot,uptime){
+  if(ts && ts.toUpperCase()!=="UNSYNCED"){
+    const d=new Date(ts.replace(" ","T"));
+    if(!Number.isNaN(d.getTime())) return d.toLocaleString([], {month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});
+    return ts;
+  }
+  const mins=Math.floor((uptime||0)/60000); return `Date not synchronized • Boot ${boot} • uptime ${Math.floor(mins/60)}h ${mins%60}m`;
+}
+function statusPill(b){return isComplete(b)?'<span class="pill good">COMPLETED</span>':'<span class="pill bad">INCOMPLETE</span>'}
+function batchRow(b){
+  return `<article class="row-card clickable" data-batch="${esc(b.batchId)}">
+    <div class="row-top"><div><div class="row-title">${esc(b.recipe||"Unnamed recipe")}</div><div class="meta">${esc(fmtTime(b.startedAt,b.bootId,b.startUptimeMs))} • ${b.headCount} head</div></div>${statusPill(b)}</div>
+    <div class="metrics"><div class="metric"><small>Target</small><strong>${fmtLb(b.targetLbs)}</strong></div>
+    <div class="metric"><small>Actual</small><strong>${fmtLb(b.actualLbs)}</strong></div>
+    <div class="metric"><small>Difference</small><strong>${fmtDiff(diff(b))}</strong></div></div>
+  </article>`
+}
+function faultRow(f){
+  const clear=(f.recordType||"").toUpperCase()==="CLEAR";
+  return `<article class="row-card"><div class="row-top"><div><div class="row-title">${esc(f.title||f.code||"Fault")}</div>
+  <div class="meta">${esc(f.code)} • ${esc(fmtTime(f.timestamp,f.bootId,f.uptimeMs))}</div></div>
+  <span class="pill ${clear?"good":"bad"}">${clear?"CLEARED":"FAULT"}</span></div>
+  <p>${esc(f.detail)}</p>${f.action?`<div class="meta">Action: ${esc(f.action)}</div>`:""}</article>`
+}
+async function refresh(){
+  feedRows=await all(FEED);faultRows=await all(FAULT);batches=buildBatches(feedRows);
+  renderAll();
+}
+function renderAll(){
+  const today=new Date().toDateString();
+  $("todayCount").textContent=batches.filter(b=>b.startedAt && new Date(b.startedAt.replace(" ","T")).toDateString()===today).length;
+  $("completeCount").textContent=batches.filter(isComplete).length;
+  $("problemCount").textContent=batches.filter(b=>!isComplete(b)).length;
+  const latestBoot=faultRows.reduce((m,x)=>Math.max(m,x.bootId),0);
+  let active=new Map();
+  faultRows.filter(x=>x.bootId===latestBoot).sort((a,b)=>a.uptimeMs-b.uptimeMs).forEach(f=>{
+    if((f.recordType||"").toUpperCase()==="CLEAR") active.delete(f.code); else active.set(f.code,f);
+  });
+  $("faultCount").textContent=active.size;
+  $("recentBatches").classList.toggle("empty",batches.length===0);
+  $("recentBatches").innerHTML=batches.length?batches.slice(0,5).map(batchRow).join(""):"No batch history imported yet.";
+  renderBatches(); renderFaults();
+  $("storageSummary").textContent=`${feedRows.length} feed records, ${faultRows.length} fault records, ${batches.length} batches stored on this device.`;
+}
+function renderBatches(){
+  const q=$("batchSearch").value.trim().toLowerCase(), st=$("batchStatus").value;
+  const list=batches.filter(b=>(!q||(b.recipe||"").toLowerCase().includes(q)) && (st==="all" || (st==="completed"?isComplete(b):!isComplete(b))));
+  $("batchList").classList.toggle("empty",list.length===0);
+  $("batchList").innerHTML=list.length?list.map(batchRow).join(""):"No matching batches.";
+}
+function renderFaults(){
+  const q=$("faultSearch").value.trim().toLowerCase();
+  const list=[...faultRows].sort((a,b)=>b.bootId-a.bootId||b.uptimeMs-a.uptimeMs).filter(f=>!q||`${f.code} ${f.title} ${f.detail}`.toLowerCase().includes(q));
+  $("faultList").classList.toggle("empty",list.length===0);
+  $("faultList").innerHTML=list.length?list.map(faultRow).join(""):"No matching fault events.";
+}
+function showBatch(id){
+  const b=batches.find(x=>x.batchId===id); if(!b)return;
+  const ingredients=b.ingredients.map(i=>`<article class="ingredient"><div class="row-top"><div><div class="row-title">${esc(i.name)}</div><div class="meta">${esc(i.completedAt?fmtTime(i.completedAt,b.bootId,b.startUptimeMs):"Not completed")}</div></div>
+  <span class="pill ${i.completedAt?"good":"warn"}">${esc(i.result|| (i.completedAt?"DONE":"STARTED"))}</span></div>
+  <div class="ingredient-grid"><div class="metric"><small>Target</small><strong>${fmtLb(i.targetLbs)}</strong></div><div class="metric"><small>Actual</small><strong>${fmtLb(i.actualLbs)}</strong></div><div class="metric"><small>Difference</small><strong>${fmtDiff(i.actualLbs==null||i.targetLbs==null?null:i.actualLbs-i.targetLbs)}</strong></div></div></article>`).join("");
+  $("batchDetailContent").innerHTML=`<div class="page-head"><div><h1>${esc(b.recipe)}</h1><p>${esc(fmtTime(b.startedAt,b.bootId,b.startUptimeMs))}</p></div>${statusPill(b)}</div>
+  <div class="summary-grid"><div class="summary"><small>Planned target</small><strong>${fmtLb(b.targetLbs)}</strong></div><div class="summary"><small>Actual total</small><strong>${fmtLb(b.actualLbs)}</strong></div><div class="summary"><small>Difference</small><strong>${fmtDiff(diff(b))}</strong></div><div class="summary"><small>Head count</small><strong>${b.headCount}</strong></div></div>
+  <h2>Ingredients</h2>${ingredients||'<div class="empty">No ingredient rows recorded.</div>'}`;
+  showView("batchDetail");
+}
+
+function normalizeControllerAddress(value){
+  let address=String(value||"").trim().replace(/\/+$/,"");
+  if(!address) address="http://feedcontroller.local";
+  if(!/^https?:\/\//i.test(address)) address=`http://${address}`;
+  return address;
+}
+function initialControllerAddress(){
+  const saved=localStorage.getItem(CONTROLLER_ADDRESS_KEY);
+  if(saved) return normalizeControllerAddress(saved);
+  const hostedRemotely=/chatgpt\.site$/i.test(location.hostname);
+  return hostedRemotely ? "http://feedcontroller.local" : location.origin;
+}
+function saveControllerAddress(){
+  const address=normalizeControllerAddress($("controllerAddress").value);
+  $("controllerAddress").value=address;
+  localStorage.setItem(CONTROLLER_ADDRESS_KEY,address);
+  return address;
+}
+async function controllerFetch(path){
+  const address=saveControllerAddress();
+  const options={cache:"no-store"};
+  // Newer browsers use this hint to request permission for a public HTTPS
+  // web app to contact a device on the local network. Older browsers ignore it.
+  options.targetAddressSpace="local";
+  return fetch(`${address}${path}`,options);
+}
+async function responseMessage(response){
+  const text=await response.text();
+  try{const json=JSON.parse(text);return json.error||json.message||text}catch(_e){return text||`HTTP ${response.status}`}
+}
+async function importHistoryText(name,text){
+  const rows=csvParse(text);
+  if(!rows.length) throw new Error("CSV is empty.");
+  const headers=Object.keys(rows[0]);
+  if(headers.includes("record_type")&&headers.includes("recipe")&&headers.includes("ingredient")){
+    const normalized=rows.map(normalizeFeed), added=await putMany(FEED,normalized);
+    return {kind:"feed",added,parsed:normalized.length,name};
+  }
+  if(headers.includes("record_type")&&headers.includes("code")&&headers.includes("detail")){
+    const normalized=rows.map(normalizeFault), added=await putMany(FAULT,normalized);
+    return {kind:"fault",added,parsed:normalized.length,name};
+  }
+  throw new Error("Not a Barn Logic feed/fault history CSV.");
+}
+async function requestFreshControllerHistory(type,report){
+  const label=type==="feed"?"Recipe":"Fault", readyKey=type==="feed"?"feed_ready":"fault_ready";
+  report(`Requesting fresh ${label.toLowerCase()} history from the controller…`);
+  const request=await controllerFetch(`/api/history/request?type=${encodeURIComponent(type)}&t=${Date.now()}`);
+  if(!request.ok) throw new Error(await responseMessage(request));
+
+  const started=Date.now();
+  let ready=false;
+  while(Date.now()-started<90000){
+    await new Promise(resolve=>setTimeout(resolve,700));
+    const statusResponse=await controllerFetch(`/api/history/status?t=${Date.now()}`);
+    if(!statusResponse.ok) throw new Error(await responseMessage(statusResponse));
+    const status=await statusResponse.json();
+    const expected=Number(status.expected||0), received=Number(status.received||0);
+    const progress=expected>0?` — ${Math.max(0,Math.min(100,Math.round(received/expected*100)))}%`:"";
+    report(`${status.status||`${label} history transfer in progress`}${progress}`);
+    if(status[readyKey]===true&&!status.active){ready=true;break}
+    if(!status.active&&!status[readyKey]&&/error|abort|timed out|failed|offline|not enough|could not|invalid|no .*history|empty|not found|nothing to send/i.test(String(status.status||""))){
+      throw new Error(status.status);
+    }
+  }
+  if(!ready) throw new Error(`${label} history transfer timed out`);
+
+  report(`${label} history verified. Importing…`);
+  const csvResponse=await controllerFetch(`/api/history/${type}.csv?t=${Date.now()}`);
+  if(!csvResponse.ok) throw new Error(await responseMessage(csvResponse));
+  return importHistoryText(`${type}-history.csv`,await csvResponse.text());
+}
+async function syncFromController(){
+  if(controllerSyncBusy) return;
+  controllerSyncBusy=true;
+  const buttons=[$("syncControllerBtn"),$("syncControllerBtnSettings")].filter(Boolean);
+  buttons.forEach(button=>{button.disabled=true;button.textContent="Syncing…"});
+  const report=message=>{
+    $("syncResult").textContent=message;
+    setBanner("info","Controller sync",message);
+  };
+  const results=[], errors=[];
+  try{
+    saveControllerAddress();
+    for(const type of ["feed","fault"]){
+      try{results.push(await requestFreshControllerHistory(type,report))}
+      catch(error){errors.push(`${type==="feed"?"Recipe":"Fault"}: ${error.message||error}`)}
+    }
+    await refresh();
+    const added=results.reduce((sum,result)=>sum+result.added,0);
+    const parsed=results.reduce((sum,result)=>sum+result.parsed,0);
+    if(!results.length) throw new Error(errors.join("\n")||"No history files were received.");
+    const detail=`${added} new records added from ${parsed} controller records. Existing records were skipped.${errors.length?`\n${errors.join("\n")}`:""}`;
+    $("syncResult").textContent=detail;
+    setBanner("good","Controller sync complete",detail);
+  }catch(error){
+    const detail=`${error.message||error}\nCheck that the phone and controller are on the same Wi-Fi, confirm the controller address, and allow Local Network access if prompted.`;
+    $("syncResult").textContent=detail;
+    setBanner("bad","Controller sync failed",detail);
+  }finally{
+    controllerSyncBusy=false;
+    buttons.forEach(button=>{button.disabled=false;button.textContent="Sync from Controller"});
+    if($("syncControllerBtn")) $("syncControllerBtn").textContent="Sync Controller";
+  }
+}
+async function importFiles(){
+  const files=[...$("filePicker").files];
+  if(!files.length){$("importResult").textContent="Select one or more CSV files first.";return}
+  let log=[], totalNew=0;
+  for(const file of files){
+    try{
+      const result=await importHistoryText(file.name,await file.text());
+      totalNew+=result.added;
+      log.push(`${file.name}: ${result.added} new ${result.kind} records (${result.parsed} parsed)`);
+    }catch(e){log.push(`${file.name}: FAILED — ${e.message}`)}
+  }
+  $("importResult").textContent=log.join("\n");
+  await refresh();
+  setBanner(totalNew? "good":"info", totalNew? "History imported":"No new records", totalNew?`${totalNew} new records were added. Existing records were skipped.`:"The selected files contained no records that were not already stored.");
+}
+function setBanner(type,title,detail){const b=$("statusBanner");b.className=`banner ${type}`;b.classList.remove("hidden");b.querySelector("strong").textContent=title;$("statusDetail").textContent=detail}
+function showView(id){
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===id));
+  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===id));
+  closeDrawer(); window.scrollTo({top:0,behavior:"instant"});
+}
+function openDrawer(){$("drawer").classList.add("open");$("drawerBackdrop").classList.remove("hidden")}
+function closeDrawer(){$("drawer").classList.remove("open");$("drawerBackdrop").classList.add("hidden")}
+
+document.addEventListener("click",e=>{
+  const nav=e.target.closest("[data-view]");if(nav){showView(nav.dataset.view);return}
+  const go=e.target.closest("[data-go]");if(go){showView(go.dataset.go);return}
+  const row=e.target.closest("[data-batch]");if(row){showBatch(row.dataset.batch);return}
+});
+$("menuBtn").onclick=openDrawer;$("drawerBackdrop").onclick=closeDrawer;
+$("dismissBanner").onclick=()=>$("statusBanner").classList.add("hidden");
+$("backToBatches").onclick=()=>showView("batches");
+$("batchSearch").oninput=renderBatches;$("batchStatus").onchange=renderBatches;$("faultSearch").oninput=renderFaults;
+$("importBtn").onclick=importFiles;
+$("syncControllerBtn").onclick=syncFromController;
+$("syncControllerBtnSettings").onclick=syncFromController;
+$("filePicker").onchange=()=>{$("importResult").textContent=$("filePicker").files.length?`${$("filePicker").files.length} file(s) selected.`:"No files selected."};
+$("clearDataBtn").onclick=async()=>{
+  if(!confirm("Delete all locally stored Barn Logic history from this device?")) return;
+  await clearStore(FEED);await clearStore(FAULT);await refresh();setBanner("info","Local history deleted","The PWA database on this device is empty.");
+};
+
+(async()=>{
+  $("controllerAddress").value=initialControllerAddress();
+  db=await openDb(); await refresh();
+  if(location.protocol==="https:"&&"serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+
+</script>
+</body>
+</html>
