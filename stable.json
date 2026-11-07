@@ -1,0 +1,23 @@
+{
+  "product": "barnlogic-feed-controller",
+  "channel": "stable",
+  "controller": {
+    "version": "1.0.9-controller-mix-transition",
+    "size": 1478752,
+    "sha256": "7516c98b1eb9ea0af99618c622839fcc448938386d2c90c718bf59a968619546",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedController_1.0.9-controller-mix-transition.bin"
+  },
+  "filesystem": {
+    "version": "1.0.6-web-earlyoff-display",
+    "size": 150225,
+    "sha256": "334faeb7ffb13fe0855ba23ce269988f7b43a08cac33aa18c195c9b968cec76b",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/index_1.0.6-web-earlyoff-display.html",
+    "path": "/index.html"
+  },
+  "hmi": {
+    "version": "1.0.20-hmi-sync-cleanup",
+    "size": 806576,
+    "sha256": "2d07a57b33f52bbf1504ef0ad9bb1390666239b3e1de58e156fc163001bea72b",
+    "url": "https://raw.githubusercontent.com/michaelsteckly-spec/BL-Controller-Update/main/FeedControllerHMI_1.0.20-hmi-sync-cleanup.bin"
+  }
+}
